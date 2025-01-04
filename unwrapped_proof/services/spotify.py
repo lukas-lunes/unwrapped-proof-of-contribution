@@ -7,7 +7,7 @@ import time
 
 import requests
 
-from spotify_proof.models.contribution import ContributionData, ListeningStats, Track
+from unwrapped_proof.models.contribution import ContributionData, ListeningStats, Track
 
 logger = logging.getLogger(__name__)
 

@@ -9,13 +9,13 @@ import gnupg
 import boto3
 from urllib.parse import urlparse
 
-from spotify_proof.config import Settings
-from spotify_proof.models.proof import ProofResponse
-from spotify_proof.services.spotify import SpotifyAPI
-from spotify_proof.services.storage import StorageService
-from spotify_proof.scoring import ContributionScorer
-from spotify_proof.db import db
-from spotify_proof.utils.json_encoder import DateTimeEncoder
+from unwrapped_proof.config import Settings
+from unwrapped_proof.models.proof import ProofResponse
+from unwrapped_proof.services.spotify import SpotifyAPI
+from unwrapped_proof.services.storage import StorageService
+from unwrapped_proof.scoring import ContributionScorer
+from unwrapped_proof.db import db
+from unwrapped_proof.utils.json_encoder import DateTimeEncoder
 
 logger = logging.getLogger(__name__)
 

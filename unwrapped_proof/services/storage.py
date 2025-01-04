@@ -5,9 +5,9 @@ from typing import Optional, Tuple
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
-from spotify_proof.models.db import UserContribution, ContributionProof
-from spotify_proof.models.contribution import ContributionData, ExistingContribution
-from spotify_proof.models.proof import ProofResponse
+from unwrapped_proof.models.db import UserContribution, ContributionProof
+from unwrapped_proof.models.contribution import ContributionData, ExistingContribution
+from unwrapped_proof.models.proof import ProofResponse
 
 logger = logging.getLogger(__name__)
 

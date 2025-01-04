@@ -5,9 +5,9 @@ import os
 import sys
 import traceback
 
-from spotify_proof.config import settings
-from spotify_proof.proof import Proof
-from spotify_proof.db import db
+from unwrapped_proof.config import settings
+from unwrapped_proof.proof import Proof
+from unwrapped_proof.db import db
 
 # Allow overriding input/output directories through env vars
 INPUT_DIR = os.environ.get('INPUT_DIR', '/input')

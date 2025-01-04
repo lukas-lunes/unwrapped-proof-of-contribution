@@ -7,8 +7,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.exc import SQLAlchemyError
 
-from spotify_proof.models.db import Base
-from spotify_proof.config import settings
+from unwrapped_proof.models.db import Base
+from unwrapped_proof.config import settings
 
 logger = logging.getLogger(__name__)
 

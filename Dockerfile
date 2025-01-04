@@ -20,4 +20,4 @@ COPY . .
 # Make sure input/output directories exist
 RUN mkdir -p /input /output
 
-CMD ["python", "-m", "finquarium_proof"]
+CMD ["python", "-m", "unwrapped_proof"]
