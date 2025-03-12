@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -42,10 +43,11 @@ jobs:
           echo "Image SHA256: $(sha256sum unwrapped-proof.tar.gz | cut -d' ' -f1)" >> release_body.txt
 
       - name: Upload image
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: unwrapped-proof-image
           path: unwrapped-proof.tar.gz
+          retention-days: 90
 
       - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v1
