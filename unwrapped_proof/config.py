@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     MAX_POINTS: int = Field(1000, description="Maximum possible points for scoring")
 
     # Optional context settings - can be None if not provided
-    DLP_ID: Optional[int] = Field(17, description="Data Liquidity Pool ID") # 17 - mainnet, 26 - testnet
+    DLP_ID: Optional[int] = Field(26, description="Data Liquidity Pool ID") # 17 - mainnet, 26 - testnet
     FILE_ID: Optional[int] = Field(0, description="File ID being processed")
     FILE_URL: Optional[str] = Field('https://spotify-exports.s3.us-east-1.amazonaws.com/encrypted_100000000000_spotify_export_1000000000000.json', description="URL of the encrypted file")
     JOB_ID: Optional[int] = Field(0, description="TEE job ID")
