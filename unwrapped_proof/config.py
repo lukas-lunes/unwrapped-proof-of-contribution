@@ -12,7 +12,7 @@ class S3Settings(BaseModel):
 class Settings(BaseSettings):
     """Application settings loaded from environment variables"""
     # Required settings
-    POSTGRES_URL: str = Field(..., description="PostgreSQL connection URL")
+    DB_PASSWORD: str = Field(..., description="Database password")
     SPOTIFY_TOKEN: str = Field(..., description="Spotify API access token")
     SPOTIFY_ENCRYPTED_REFRESH_TOKEN: str = Field(..., description="Encrypted Spotify refresh token")
     ENCRYPTION_KEY: Optional[str] = Field(..., description="Encryption key for the file")
@@ -53,3 +53,6 @@ class Settings(BaseSettings):
     )
 
 settings = Settings()
+
+# Constants
+MAX_POINTS = 1000
