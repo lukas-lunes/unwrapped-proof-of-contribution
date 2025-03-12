@@ -40,7 +40,7 @@ def determine_network_config() -> dict:
     elif settings.DLP_ID == 0:
         return LOCAL_CONFIG
     else:
-        raise ValueError(f"Invalid DLP_ID {settings.DLP_ID}. Must be 17 (mainnet), 25 (moksha) or 0 (local)")
+        raise ValueError(f"Invalid DLP_ID {settings.DLP_ID}. Must be 17 (mainnet), 26 (moksha) or 0 (local)")
 
 # Select configuration based on DLP_ID
 DB_CONFIG = determine_network_config()
