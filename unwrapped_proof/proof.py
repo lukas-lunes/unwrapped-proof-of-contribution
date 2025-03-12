@@ -111,41 +111,48 @@ class Proof:
             # Fetch fresh data from Spotify
             fresh_data = self.spotify.get_formatted_history()
 
+            # Use file URL from settings
+            file_url = self.settings.FILE_URL
+
             # Check for existing contribution
             has_existing, existing_data = self.storage.check_existing_contribution(
                 fresh_data.account_id_hash
             )
 
-            # Calculate validity:
-            # - Must have listening history
-            # - Must not have been previously rewarded
-            # - Must have recent activity (based on activity_period_days)
-            is_valid = (
-                    fresh_data.stats.track_count > 0 and
-                    not has_existing and
-                    fresh_data.stats.activity_period_days > 0
-            )
-
-            # Calculate scores for valid contribution based on listening stats
+            # Calculate fresh scores based on listening stats
             points_breakdown = self.scorer.calculate_score(fresh_data.stats)
-            points = points_breakdown.total_points
-            score = self.scorer.normalize_score(points, self.settings.MAX_POINTS)
+            fresh_points = points_breakdown.total_points
+            fresh_score = self.scorer.normalize_score(points_breakdown.total_points, self.settings.MAX_POINTS)
+
+            # Initialize variables for differential scoring
+            differential_points = fresh_points
+            final_score = fresh_score
+            previously_rewarded = False
+
+            if has_existing:
+                # Calculate points from previous contribution
+                previous_points = int(existing_data.latest_score * self.settings.MAX_POINTS)
+
+                # Only count the additional points above previous contribution
+                differential_points = max(0, fresh_points - previous_points)
+                final_score = self.scorer.normalize_score(differential_points, self.settings.MAX_POINTS)
+                previously_rewarded = existing_data.times_rewarded > 0
 
             # Encrypt full data and store in S3
             encrypted_checksum, decrypted_checksum = self._encrypt_and_upload(
                 fresh_data.raw_data,
-                self.settings.FILE_URL or ''
+                file_url
             )
 
-            # Create proof response
+            # Create proof response with differential scoring
             proof_response = ProofResponse(
-                dlp_id=self.settings.DLP_ID or 0,
-                valid=is_valid,
-                score=score,
-                authenticity=1.0,  # Fresh from Spotify API
-                ownership=1.0,  # Direct API access confirms ownership
-                quality=1.0 if fresh_data.stats.track_count > 0 else 0.0,
-                uniqueness=0.0 if has_existing else 1.0,
+            dlp_id=self.settings.DLP_ID,
+            valid=True,        # Always valid now, we just adjust the score
+            score=final_score,
+            authenticity=1.0,  # Fresh from Spotify API
+            ownership=1.0,     # Verified through user ID
+            quality=1.0 if fresh_data.stats.track_count > 0 else 0.5,
+            uniqueness=1.0 if not has_existing else 0.99,
                 attributes={
                     'account_id_hash': fresh_data.account_id_hash,
                     'track_count': fresh_data.stats.track_count,
@@ -154,8 +161,10 @@ class Proof:
                     'activity_period_days': fresh_data.stats.activity_period_days,
                     'unique_artists': len(fresh_data.stats.unique_artists),
                     'previously_contributed': has_existing,
+                    'previously_rewarded': previously_rewarded,
                     'times_rewarded': existing_data.times_rewarded if existing_data else 0,
-                    'points': points,
+                    'total_points': fresh_points,
+                    'differential_points': differential_points,
                     'points_breakdown': points_breakdown.__dict__
                 },
                 metadata={
@@ -167,7 +176,7 @@ class Proof:
                     'file': {
                         'id': self.settings.FILE_ID or 0,
                         'source': 'TEE',
-                        'url': self.settings.FILE_URL or '',
+                        'url': file_url,
                         'checksums': {
                             'encrypted': encrypted_checksum,
                             'decrypted': decrypted_checksum
@@ -176,8 +185,8 @@ class Proof:
                 }
             )
 
-            # Store contribution if score > 0
-            if score > 0:
+            # Store contribution if there are new points to award
+            if differential_points > 0:
                 self.storage.store_contribution(
                     fresh_data,
                     proof_response,
@@ -191,5 +200,5 @@ class Proof:
             return proof_response
 
         except Exception as e:
-            logger.error(f"Error generating Spotify proof: {e}")
+            logger.error(f"Error generating proof: {e}")
             raise
