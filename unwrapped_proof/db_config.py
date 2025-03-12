@@ -35,7 +35,7 @@ def determine_network_config() -> dict:
 
     if settings.DLP_ID == 17:
         return MAINNET_CONFIG
-    elif settings.DLP_ID == 25:
+    elif settings.DLP_ID == 26:
         return TESTNET_CONFIG
     elif settings.DLP_ID == 0:
         return LOCAL_CONFIG
