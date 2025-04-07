@@ -14,10 +14,12 @@ logger = logging.getLogger(__name__)
 class SpotifyAPI:
     """Handles all Spotify API interactions with consistent formatting"""
 
-    def __init__(self, token: str):
-        """Initialize with Spotify access token"""
+    def __init__(self, token: str, base_url: str = "https://api.spotify.com/v1"):
+        """
+        Initialize with Spotify access token
+        """
         self.token = token
-        self.base_url = "https://api.spotify.com/v1"
+        self.base_url = base_url
         self.session = requests.Session()
         self.session.headers.update({
             'Authorization': f'Bearer {token}',
@@ -69,6 +71,7 @@ class SpotifyAPI:
             except requests.exceptions.RequestException as e:
                 if response.status_code == 429:  # Rate limit hit
                     retry_after = int(response.headers.get('Retry-After', 1))
+                    logger.warning(f"Rate limit hit, retrying after {retry_after} seconds")
                     time.sleep(retry_after)
                     continue
                 elif attempt == retries - 1:  # Last attempt

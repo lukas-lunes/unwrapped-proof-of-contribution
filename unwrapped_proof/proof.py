@@ -30,7 +30,11 @@ class Proof:
         self.settings = settings
         self.scorer = ContributionScorer()
         self.storage = StorageService(db.get_session())
-        self.spotify = SpotifyAPI(settings.SPOTIFY_TOKEN)
+        self.spotify = SpotifyAPI(
+            token=settings.SPOTIFY_TOKEN,
+            base_url=settings.SPOTIFY_API_URL
+        )
+
         self.s3_client = boto3.client(
             's3',
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,

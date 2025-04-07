@@ -28,7 +28,13 @@ def run() -> None:
 
         # Log config (excluding sensitive data)
         logger.info("Using configuration:")
-        safe_config = settings.model_dump(exclude={'SPOTIFY_TOKEN', 'POSTGRES_URL'})
+        safe_config = settings.model_dump(exclude={
+            'SPOTIFY_TOKEN',
+            'POSTGRES_URL',
+            'SPOTIFY_ENCRYPTED_REFRESH_TOKEN',
+            'DB_PASSWORD',
+            'AWS_SECRET_ACCESS_KEY'
+        })
         logger.info(json.dumps(safe_config, indent=2))
 
         # Initialize and run proof generation

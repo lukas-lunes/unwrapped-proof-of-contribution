@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     DB_PASSWORD: str = Field(..., description="Database password")
     SPOTIFY_TOKEN: str = Field(..., description="Spotify API access token")
     SPOTIFY_ENCRYPTED_REFRESH_TOKEN: str = Field(..., description="Encrypted Spotify refresh token")
+    SPOTIFY_API_URL: Optional[str] = Field(default="https://api.spotify.com/v1", description="Spotify API base URL")
     ENCRYPTION_KEY: Optional[str] = Field(..., description="Encryption key for the file")
 
     # S3 credentials
