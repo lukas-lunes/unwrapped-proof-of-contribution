@@ -37,4 +37,7 @@ class ExistingContribution:
     total_minutes: int
     activity_period_days: int
     unique_artists: int
+    # Cumulative score achieved *before* this contribution
     latest_score: float
+    # Field to carry the cursor state
+    last_spotify_fetch_cursor: Optional[int]

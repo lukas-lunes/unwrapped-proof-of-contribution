@@ -25,6 +25,8 @@ class UserContribution(Base):
     latest_contribution_at = Column(DateTime, default=datetime.datetime.now(datetime.UTC))
     raw_data = Column(JSON, nullable=True)
     encrypted_refresh_token = Column(String, nullable=True)
+    # Store the 'before' timestamp (in ms) from the last fetch
+    last_spotify_fetch_cursor = Column(BigInteger, nullable=True)
 
 class ContributionProof(Base):
     """
@@ -39,7 +41,7 @@ class ContributionProof(Base):
     file_url = Column(String, nullable=False)
     job_id = Column(String, nullable=False)
     owner_address = Column(String, nullable=False)
-    score = Column(Float, nullable=False)
+    score = Column(Float, nullable=False) # Score for this specific contribution attempt
     authenticity = Column(Float, nullable=False)
     ownership = Column(Float, nullable=False)
     quality = Column(Float, nullable=False)
