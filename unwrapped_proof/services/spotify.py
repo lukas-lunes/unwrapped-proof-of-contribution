@@ -452,23 +452,46 @@ class SpotifyAPI:
         }
 
         if settings.GENERATE_INSIGHTS:
-
             # Top 5 Artists (priority: medium -> long -> short)
             top_artists_list_for_insight: List[Dict] = []
+            seen_artist_ids_for_insight = set() # To ensure unique artists in the top 5
+
+            logger.debug("Starting Top 5 Artists collection for insights.") # Added debug
+
             for tr_label in ["medium_term", "long_term", "short_term"]:
+                if len(top_artists_list_for_insight) >= 5:
+                    logger.debug(f"Already have {len(top_artists_list_for_insight)} artists, breaking artist collection.")
+                    break
+
                 artist_source_list = raw_top_artists_by_range.get(tr_label, [])
-                if artist_source_list: # If this time range has artists
-                    for art_obj in artist_source_list[:5]: # Take up to top 5
-                        if isinstance(art_obj, dict):
+                logger.debug(f"Processing artists from '{tr_label}'. Found {len(artist_source_list)} artists in raw data for this range.") # Added debug
+
+                if artist_source_list: # Ensure there's a list to iterate
+                    for art_obj in artist_source_list:
+                        if len(top_artists_list_for_insight) >= 5:
+                            logger.debug("Reached 5 artists limit within a time range loop.") # Added debug
+                            break
+
+                        artist_id = art_obj.get("id") if isinstance(art_obj, dict) else None
+
+                        if artist_id and artist_id not in seen_artist_ids_for_insight:
+                            logger.debug(f"Adding artist ID: {artist_id}, Name: {art_obj.get('name')} from '{tr_label}'. Current count: {len(top_artists_list_for_insight) + 1}") # Added debug
                             top_artists_list_for_insight.append({
-                                "name": art_obj.get("name"), "id": art_obj.get("id"),
+                                "name": art_obj.get("name"), "id": artist_id,
                                 "image_url": _get_image_url(art_obj.get("images", [])),
                                 "spotify_url": _get_spotify_url(art_obj.get("external_urls"))
                             })
-                    if top_artists_list_for_insight: # If we got any artists from this range
-                        break # Stop checking other time ranges
-            insights["top_artists"] = top_artists_list_for_insight
+                            seen_artist_ids_for_insight.add(artist_id)
+                        elif artist_id in seen_artist_ids_for_insight:
+                            logger.debug(f"Artist ID: {artist_id} already seen. Skipping.") # Added debug
+                        elif not artist_id:
+                            logger.debug(f"Skipping artist object due to missing ID: {art_obj}") # Added debug
+                else:
+                    logger.debug(f"No artists found in raw data for '{tr_label}'.")
 
+
+            insights["top_artists"] = top_artists_list_for_insight
+            #logger.debug(f"Final top_artists for insights: {json.dumps(insights['top_artists'], indent=2)}") # Added debug
 
             # Top 5 Medium Term Tracks
             top_medium_tracks_list_for_insight: List[Dict] = []
