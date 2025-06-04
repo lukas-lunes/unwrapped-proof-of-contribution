@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     # Input/Output directories with defaults
     INPUT_DIR: str = Field("/input", description="Directory containing input files")
     OUTPUT_DIR: str = Field("/output", description="Directory for output files")
+    DEBUG_DIR: str = Field("./debug", description="Directory for debug files")
+
+    GENERATE_INSIGHTS: bool = Field(False, description="Flag to enable generation of detailed insights for infographics.")
 
     @property
     def s3_settings(self) -> S3Settings:
